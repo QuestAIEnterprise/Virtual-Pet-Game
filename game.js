@@ -1,10 +1,9 @@
 // game.js
 
-// DOM Elements
+// DOM-elementer
 const animalSelection = document.getElementById('animal-selection');
 const gameScreen = document.getElementById('game-screen');
 const petNameElem = document.getElementById('pet-name');
-const petImage = document.getElementById('pet-image');
 const hungerElem = document.getElementById('hunger');
 const happinessElem = document.getElementById('happiness');
 const cleanlinessElem = document.getElementById('cleanliness');
@@ -17,18 +16,18 @@ const sleepBtn = document.getElementById('sleep-btn');
 const customizeBtn = document.getElementById('customize-btn');
 const itemList = document.getElementById('item-list');
 
-// Modal Elements
+// Modal-elementer
 const customizationModal = document.getElementById('customization-modal');
 const closeModal = document.getElementById('close-modal');
 const colorOptions = document.querySelectorAll('.color-btn');
 
-// Sound Effects
+// Lyd effekter
 const feedSound = document.getElementById('feed-sound');
 const playSound = document.getElementById('play-sound');
 const cleanSound = document.getElementById('clean-sound');
 const sleepSound = document.getElementById('sleep-sound');
 
-// Game Variables
+// Spilvariabler
 let pet = {
     name: '',
     type: '',
@@ -42,7 +41,10 @@ let pet = {
     items: []
 };
 
-// Load Game State from localStorage
+// 3D-scene elementer
+let scene, camera, renderer, petModel, mixer, controls, clock;
+
+// Indlæs spiltilstand fra localStorage
 function loadGame() {
     const savedPet = JSON.parse(localStorage.getItem('pet'));
     if (savedPet) {
@@ -51,32 +53,129 @@ function loadGame() {
     }
 }
 
-// Save Game State to localStorage
+// Gem spiltilstand til localStorage
 function saveGame() {
     localStorage.setItem('pet', JSON.stringify(pet));
 }
 
-// Start the Game
+// Start spillet
 function startGame() {
     animalSelection.style.display = 'none';
     gameScreen.style.display = 'block';
-    petNameElem.textContent = pet.name || 'Your Pet';
-    updatePetImage();
+    petNameElem.textContent = pet.name || 'Dit Kæledyr';
     updateStats();
     updateItems();
+    init3D();
     gameLoop();
     updateBackground();
 }
 
-// Update Pet Image
-function updatePetImage() {
-    petImage.src = `images/${pet.type}.png`;
-    if (pet.color) {
-        petImage.style.filter = `hue-rotate(${pet.color}deg)`;
+// Opdater kæledyrets billede
+function updatePetModel() {
+    // Fjern eksisterende model
+    if (petModel) {
+        scene.remove(petModel);
     }
+
+    const loader = new THREE.GLTFLoader();
+    let modelPath = '';
+
+    // Vælg modellen baseret på kæledyrstype
+    switch (pet.type) {
+        case 'kat':
+            modelPath = 'models/cat.gltf';
+            break;
+        case 'hund':
+            modelPath = 'models/dog.gltf';
+            break;
+        case 'fugl':
+            modelPath = 'models/bird.gltf';
+            break;
+        // Tilføj flere kæledyrstyper efter behov
+    }
+
+    loader.load(modelPath, function (gltf) {
+        petModel = gltf.scene;
+        petModel.scale.set(1.5, 1.5, 1.5); // Juster skala efter behov
+
+        // Anvend farvetilpasning
+        if (pet.color) {
+            petModel.traverse(function (child) {
+                if (child.isMesh) {
+                    child.material.color.set(pet.color);
+                }
+            });
+        }
+
+        scene.add(petModel);
+
+        // Opret AnimationMixer
+        mixer = new THREE.AnimationMixer(petModel);
+
+        // Indlæs animationer, hvis tilgængelige
+        if (gltf.animations.length > 0) {
+            const action = mixer.clipAction(gltf.animations[0]);
+            action.play();
+        }
+    }, undefined, function (error) {
+        console.error(error);
+    });
 }
 
-// Update Stats Display
+// Initialiser 3D-scenen
+function init3D() {
+    // Opret scene
+    scene = new THREE.Scene();
+
+    // Opret kamera
+    camera = new THREE.PerspectiveCamera(75, 400 / 400, 0.1, 1000);
+    camera.position.z = 5;
+
+    // Opret renderer
+    renderer = new THREE.WebGLRenderer({ alpha: true });
+    renderer.setSize(400, 400);
+    document.getElementById('pet-container').appendChild(renderer.domElement);
+
+    // Tilføj lys
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    directionalLight.position.set(0, 1, 1);
+    scene.add(directionalLight);
+
+    // Tilføj kontroller
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.enableZoom = false;
+
+    // Opret ur til animationer
+    clock = new THREE.Clock();
+
+    // Indlæs kæledyrsmodel
+    updatePetModel();
+
+    // Start animationsloop
+    animate();
+}
+
+// Animationsloop
+function animate() {
+    requestAnimationFrame(animate);
+
+    // Opdater kontroller
+    controls.update();
+
+    // Opdater mixer til animationer
+    if (mixer) {
+        mixer.update(clock.getDelta());
+    }
+
+    renderer.render(scene, camera);
+}
+
+// Opdater stats
 function updateStats() {
     hungerElem.textContent = pet.hunger;
     happinessElem.textContent = pet.happiness;
@@ -90,7 +189,7 @@ function updateStats() {
     document.getElementById('energy-bar').style.width = `${pet.energy}%`;
 }
 
-// Update Items Display
+// Opdater genstande
 function updateItems() {
     itemList.innerHTML = '';
     pet.items.forEach(item => {
@@ -101,7 +200,7 @@ function updateItems() {
     });
 }
 
-// Game Loop
+// Spil-loop
 function gameLoop() {
     setInterval(() => {
         pet.hunger = Math.max(0, pet.hunger - 1);
@@ -110,19 +209,19 @@ function gameLoop() {
         pet.energy = Math.max(0, pet.energy - 1);
         updateStats();
         saveGame();
-    }, 5000); // Decrease stats every 5 seconds
+    }, 5000); // Reducer stats hver 5. sekund
 }
 
-// Event Listeners for Animal Selection
+// Kæledyrsvalg event lyttere
 document.querySelectorAll('.animal-options img').forEach(img => {
     img.addEventListener('click', () => {
         pet.type = img.dataset.animal;
-        pet.name = prompt('Name your pet:') || 'Pet';
+        pet.name = prompt('Navngiv dit kæledyr:') || 'Kæledyr';
         startGame();
     });
 });
 
-// Action Buttons
+// Handlinger
 feedBtn.addEventListener('click', () => {
     if (pet.hunger < 100) {
         pet.hunger = Math.min(100, pet.hunger + 10);
@@ -131,8 +230,9 @@ feedBtn.addEventListener('click', () => {
         updateStats();
         saveGame();
         feedSound.play();
+        animatePet('feed');
     } else {
-        alert('Your pet is not hungry.');
+        alert('Dit kæledyr er ikke sultent.');
     }
 });
 
@@ -145,10 +245,11 @@ playBtn.addEventListener('click', () => {
         updateStats();
         saveGame();
         playSound.play();
+        animatePet('play');
     } else if (pet.energy < 10) {
-        alert('Your pet is too tired to play.');
+        alert('Dit kæledyr er for træt til at lege.');
     } else {
-        alert('Your pet is already very happy.');
+        alert('Dit kæledyr er allerede meget glad.');
     }
 });
 
@@ -160,8 +261,9 @@ cleanBtn.addEventListener('click', () => {
         updateStats();
         saveGame();
         cleanSound.play();
+        animatePet('clean');
     } else {
-        alert('Your pet is already clean.');
+        alert('Dit kæledyr er allerede rent.');
     }
 });
 
@@ -175,12 +277,13 @@ sleepBtn.addEventListener('click', () => {
         updateStats();
         saveGame();
         sleepSound.play();
+        animatePet('sleep');
     } else {
-        alert('Your pet is not tired.');
+        alert('Dit kæledyr er ikke træt.');
     }
 });
 
-// Customization
+// Tilpasning
 customizeBtn.addEventListener('click', () => {
     customizationModal.style.display = 'block';
 });
@@ -198,62 +301,68 @@ window.addEventListener('click', (event) => {
 colorOptions.forEach(btn => {
     btn.addEventListener('click', () => {
         const color = btn.getAttribute('data-color');
-        pet.color = getHueRotation(color);
-        updatePetImage();
+        pet.color = color;
+        updatePetModel();
         saveGame();
         customizationModal.style.display = 'none';
     });
 });
 
-// Convert Color to Hue Rotation
-function getHueRotation(color) {
-    // Example function, you might need to adjust this
-    switch (color) {
-        case '#FFD700':
-            return 50; // Gold
-        case '#FF69B4':
-            return 330; // Pink
-        case '#1E90FF':
-            return 210; // Blue
-        default:
-            return 0;
+// Animer kæledyret baseret på handling
+function animatePet(action) {
+    if (petModel) {
+        switch (action) {
+            case 'feed':
+                gsap.to(petModel.position, { y: petModel.position.y + 0.5, duration: 0.5, yoyo: true, repeat: 1 });
+                break;
+            case 'play':
+                gsap.to(petModel.rotation, { y: petModel.rotation.y + Math.PI * 2, duration: 1 });
+                break;
+            case 'clean':
+                gsap.to(petModel.rotation, { x: petModel.rotation.x + Math.PI * 2, duration: 1 });
+                break;
+            case 'sleep':
+                gsap.to(petModel.position, { y: petModel.position.y - 0.5, duration: 0.5, yoyo: true, repeat: 1 });
+                break;
+            // Tilføj flere animationer efter behov
+        }
     }
 }
 
-// Check for Experience-Based Items
+// Tjek for erfaringbaserede genstande
 function checkForItems() {
     const itemThresholds = [50, 100, 200, 400];
     itemThresholds.forEach(threshold => {
         if (pet.experience >= threshold && !pet.items.includes(`item${threshold}`)) {
             pet.items.push(`item${threshold}`);
-            alert(`You have earned a new item!`);
+            alert(`Du har optjent en ny genstand!`);
             updateItems();
         }
     });
     checkForLevelUp();
 }
 
-// Check for Level Up
+// Tjek for niveau-op
 function checkForLevelUp() {
     const levelThresholds = [100, 300, 600];
     levelThresholds.forEach((threshold, index) => {
         if (pet.experience >= threshold && pet.level === index + 1) {
             pet.level += 1;
-            alert(`Your pet has evolved to Level ${pet.level}!`);
-            petImage.style.transform = `scale(${1 + index * 0.1})`;
+            alert(`Dit kæledyr har udviklet sig til Niveau ${pet.level}!`);
+            petModel.scale.multiplyScalar(1.1);
         }
     });
 }
 
-// Update Background Based on Time
+// Opdater baggrund baseret på tid
 function updateBackground() {
     const hour = new Date().getHours();
     if (hour >= 6 && hour < 18) {
-        document.body.style.backgroundColor = '#f0f8ff'; // Day
+        document.body.style.backgroundColor = '#f0f8ff'; // Dag
     } else {
-        document.body.style.backgroundColor = '#2c3e50'; // Night
+        document.body.style.backgroundColor = '#2c3e50'; // Nat
     }
 }
 
-// Initialize Game
+// Initialiser spillet
 loadGame();

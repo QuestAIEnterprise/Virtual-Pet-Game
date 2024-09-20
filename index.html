@@ -1,81 +1,88 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="da">
 <head>
     <meta charset="UTF-8">
-    <title>Virtual Pet Game</title>
+    <title>Virtuelt Kæledyrsspil</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Inkluder Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Inkluder GLTFLoader -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <!-- Inkluder OrbitControls -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Inkluder GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
 </head>
 <body>
     <div id="game-container">
-        <!-- Animal Selection Screen -->
+        <!-- Kæledyrsvalg -->
         <div id="animal-selection">
-            <h1>Select Your Pet</h1>
+            <h1>Vælg Dit Kæledyr</h1>
             <div class="animal-options">
-                <img src="images/cat.png" alt="Cat" data-animal="cat">
-                <img src="images/dog.png" alt="Dog" data-animal="dog">
-                <img src="images/bird.png" alt="Bird" data-animal="bird">
-                <!-- Add more animal options if desired -->
+                <img src="images/cat.png" alt="Kat" data-animal="kat">
+                <img src="images/dog.png" alt="Hund" data-animal="hund">
+                <img src="images/bird.png" alt="Fugl" data-animal="fugl">
+                <!-- Tilføj flere muligheder efter behov -->
             </div>
         </div>
 
-        <!-- Main Game Screen -->
+        <!-- Spilskærm -->
         <div id="game-screen" style="display: none;">
             <h1 id="pet-name"></h1>
             <div id="pet-container">
-                <img id="pet-image" src="" alt="Your Pet">
+                <!-- Three.js renderer vil blive tilføjet her -->
             </div>
             <div id="stats">
-                <p>Hunger:</p>
+                <p>Sult:</p>
                 <div class="stat-bar">
                     <div id="hunger-bar" class="stat-fill"></div>
                 </div>
-                <p>Happiness:</p>
+                <p>Glæde:</p>
                 <div class="stat-bar">
                     <div id="happiness-bar" class="stat-fill"></div>
                 </div>
-                <p>Cleanliness:</p>
+                <p>Renlighed:</p>
                 <div class="stat-bar">
                     <div id="cleanliness-bar" class="stat-fill"></div>
                 </div>
-                <p>Energy:</p>
+                <p>Energi:</p>
                 <div class="stat-bar">
                     <div id="energy-bar" class="stat-fill"></div>
                 </div>
-                <p>Experience: <span id="experience">0</span></p>
+                <p>Erfaring: <span id="experience">0</span></p>
             </div>
             <div id="actions">
-                <button id="feed-btn">Feed</button>
-                <button id="play-btn">Play</button>
-                <button id="clean-btn">Clean</button>
-                <button id="sleep-btn">Sleep</button>
-                <!-- Add more action buttons if needed -->
+                <button id="feed-btn">Fodr</button>
+                <button id="play-btn">Leg</button>
+                <button id="clean-btn">Rens</button>
+                <button id="sleep-btn">Sov</button>
             </div>
             <div id="customization">
-                <h2>Customize Your Pet</h2>
-                <button id="customize-btn">Customize</button>
+                <h2>Tilpas Dit Kæledyr</h2>
+                <button id="customize-btn">Tilpas</button>
             </div>
             <div id="items">
-                <h2>Items</h2>
+                <h2>Genstande</h2>
                 <div id="item-list"></div>
             </div>
         </div>
     </div>
 
-    <!-- Customization Modal -->
+    <!-- Tilpasningsmodal -->
     <div id="customization-modal" class="modal" style="display: none;">
         <div class="modal-content">
             <span id="close-modal">&times;</span>
-            <h2>Customize Your Pet</h2>
+            <h2>Tilpas Dit Kæledyr</h2>
             <div id="color-options">
-                <button class="color-btn" data-color="#FFD700">Gold</button>
+                <button class="color-btn" data-color="#FFD700">Guld</button>
                 <button class="color-btn" data-color="#FF69B4">Pink</button>
-                <button class="color-btn" data-color="#1E90FF">Blue</button>
-                <!-- Add more color options -->
+                <button class="color-btn" data-color="#1E90FF">Blå</button>
+                <!-- Tilføj flere farvemuligheder -->
             </div>
         </div>
     </div>
 
-    <!-- Sound Effects -->
+    <!-- Lyd Effekter -->
     <audio id="feed-sound" src="sounds/feed.mp3"></audio>
     <audio id="play-sound" src="sounds/play.mp3"></audio>
     <audio id="clean-sound" src="sounds/clean.mp3"></audio>
