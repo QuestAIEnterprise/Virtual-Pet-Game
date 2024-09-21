@@ -4,13 +4,10 @@
     <meta charset="UTF-8">
     <title>Virtuelt Kæledyrsspil</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Inkluder Three.js -->
+    <!-- Inkluder Three.js og relaterede scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- Inkluder GLTFLoader -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <!-- Inkluder OrbitControls -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <!-- Inkluder GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
 </head>
 <body>
@@ -19,9 +16,9 @@
         <div id="animal-selection">
             <h1>Vælg Dit Kæledyr</h1>
             <div class="animal-options">
-                <img src="images/cat.png" alt="Kat" data-animal="kat">
-                <img src="images/dog.png" alt="Hund" data-animal="hund">
-                <img src="images/bird.png" alt="Fugl" data-animal="fugl">
+                <img src="images/cat.png" alt="Kat" data-animal="cat">
+                <img src="images/dog.png" alt="Hund" data-animal="dog">
+                <img src="images/bird.png" alt="Fugl" data-animal="bird">
                 <!-- Tilføj flere muligheder efter behov -->
             </div>
         </div>
@@ -29,6 +26,7 @@
         <!-- Spilskærm -->
         <div id="game-screen" style="display: none;">
             <h1 id="pet-name"></h1>
+            <p id="pet-age">Alder: 0 måneder</p>
             <div id="pet-container">
                 <!-- Three.js renderer vil blive tilføjet her -->
             </div>
@@ -50,6 +48,7 @@
                     <div id="energy-bar" class="stat-fill"></div>
                 </div>
                 <p>Erfaring: <span id="experience">0</span></p>
+                <p>Niveau: <span id="level">1</span></p>
             </div>
             <div id="actions">
                 <button id="feed-btn">Fodr</button>
@@ -57,27 +56,36 @@
                 <button id="clean-btn">Rens</button>
                 <button id="sleep-btn">Sov</button>
             </div>
-            <div id="customization">
-                <h2>Tilpas Dit Kæledyr</h2>
-                <button id="customize-btn">Tilpas</button>
-            </div>
-            <div id="items">
-                <h2>Genstande</h2>
-                <div id="item-list"></div>
+            <div id="menu-buttons">
+                <button id="inventory-btn">Inventar</button>
+                <button id="open-shop-btn">Butik</button>
             </div>
         </div>
     </div>
 
-    <!-- Tilpasningsmodal -->
-    <div id="customization-modal" class="modal" style="display: none;">
+    <!-- Inventar Modal -->
+    <div id="inventory-modal" class="modal" style="display: none;">
         <div class="modal-content">
-            <span id="close-modal">&times;</span>
-            <h2>Tilpas Dit Kæledyr</h2>
-            <div id="color-options">
-                <button class="color-btn" data-color="#FFD700">Guld</button>
-                <button class="color-btn" data-color="#FF69B4">Pink</button>
-                <button class="color-btn" data-color="#1E90FF">Blå</button>
-                <!-- Tilføj flere farvemuligheder -->
+            <span id="close-inventory-modal">&times;</span>
+            <h2>Dit Inventar</h2>
+            <div id="inventory-items">
+                <!-- Inventar genstande vil blive vist her -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Butiksmodal -->
+    <div id="shop-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span id="close-shop-modal">&times;</span>
+            <h2>Butik</h2>
+            <h3>Foder</h3>
+            <div id="food-items">
+                <!-- Foder genstande vil blive tilføjet her -->
+            </div>
+            <h3>Legetøj</h3>
+            <div id="toy-items">
+                <!-- Legetøj genstande vil blive tilføjet her -->
             </div>
         </div>
     </div>
@@ -88,6 +96,27 @@
     <audio id="clean-sound" src="sounds/clean.mp3"></audio>
     <audio id="sleep-sound" src="sounds/sleep.mp3"></audio>
 
+<!-- Arbejde Modal -->
+<div id="work-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span id="close-work-modal">&times;</span>
+        <h2>Gå på Arbejde</h2>
+        <p>Vil du hyre en kæledyrs babysitter, mens du er på arbejde?</p>
+        <p>Pris for babysitter: <span id="babysitter-price">20</span> mønter</p>
+        <button id="hire-babysitter-btn">Hyre Babysitter</button>
+        <button id="no-babysitter-btn">Ingen Babysitter</button>
+    </div>
+</div>
+
+<!-- Inkluder Scripts -->
+<script type="module" src="game.js"></script>
+
+
+    <!-- Inkluder Scripts -->
+    <script src="pet.js"></script>
+    <script src="inventory.js"></script>
+    <script src="shop.js"></script>
     <script src="game.js"></script>
+    <script type="module" src="game.js"></script>
 </body>
 </html>

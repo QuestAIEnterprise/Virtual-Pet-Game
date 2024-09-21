@@ -1,17 +1,21 @@
 /* styles.css */
 
+/* Generelle stilarter */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f0f8ff;
+    background-image: url('images/background.jpg');
+    background-size: cover;
+    background-position: center;
     text-align: center;
     margin: 0;
     padding: 0;
 }
 
 #game-container {
-    max-width: 600px;
+    max-width: 800px;
     margin: 0 auto;
     padding: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
 }
 
 .animal-options img {
@@ -21,9 +25,9 @@ body {
     transition: transform 0.2s;
 }
 
-    .animal-options img:hover {
-        transform: scale(1.1);
-    }
+.animal-options img:hover {
+    transform: scale(1.1);
+}
 
 #pet-container {
     width: 400px;
@@ -35,10 +39,10 @@ body {
     margin-top: 20px;
 }
 
-    #stats p {
-        font-size: 18px;
-        margin: 10px 0 5px;
-    }
+#stats p {
+    font-size: 18px;
+    margin: 10px 0 5px;
+}
 
 .stat-bar {
     position: relative;
@@ -47,6 +51,7 @@ body {
     background-color: #ddd;
     border-radius: 10px;
     margin: 0 auto 15px;
+    overflow: hidden;
 }
 
 .stat-fill {
@@ -54,32 +59,29 @@ body {
     background-color: #76c7c0;
     border-radius: 10px;
     transition: width 0.5s;
+    width: 50%; /* Initial bredde */
 }
 
 #actions button,
-#customize-btn {
+#menu-buttons button {
     padding: 10px 20px;
     margin: 5px;
     font-size: 16px;
     cursor: pointer;
 }
 
-#items {
-    margin-top: 20px;
+#pet-age {
+    font-size: 18px;
+    margin-bottom: 10px;
 }
 
-    #items h2 {
-        margin-bottom: 10px;
-    }
-
-#item-list img {
-    width: 50px;
-    margin: 5px;
+#menu-buttons {
+    margin-top: 10px;
 }
 
-/* Modal Styles */
+/* Modal Stilarter */
 .modal {
-    display: block; /* Hidden by default */
+    display: none; /* Skjult som standard */
     position: fixed;
     z-index: 1;
     left: 0;
@@ -92,15 +94,16 @@ body {
 
 .modal-content {
     background-color: #fefefe;
-    margin: 10% auto;
+    margin: 5% auto;
     padding: 20px;
     border: 1px solid #888;
     width: 80%;
-    max-width: 400px;
+    max-width: 800px;
     text-align: center;
 }
 
-#close-modal {
+#close-inventory-modal,
+#close-shop-modal {
     color: #aaa;
     float: right;
     font-size: 28px;
@@ -108,32 +111,32 @@ body {
     cursor: pointer;
 }
 
-#color-options {
+#inventory-items,
+#food-items,
+#toy-items {
     display: flex;
-    justify-content: center;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
-.color-btn {
-    width: 60px;
-    height: 60px;
+.inventory-item,
+.shop-item {
+    width: 100px;
     margin: 10px;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
+    text-align: center;
 }
 
-    .color-btn[data-color="#FFD700"] {
-        background-color: #FFD700;
-    }
+.inventory-item img,
+.shop-item img {
+    width: 80px;
+    height: 80px;
+}
 
-    .color-btn[data-color="#FF69B4"] {
-        background-color: #FF69B4;
-    }
-
-    .color-btn[data-color="#1E90FF"] {
-        background-color: #1E90FF;
-    }
+.inventory-item button,
+.shop-item button {
+    margin-top: 5px;
+    padding: 5px 10px;
+}
 
 /* Responsivt Design */
 @media (max-width: 600px) {
@@ -141,4 +144,25 @@ body {
         width: 300px;
         height: 300px;
     }
+}
+/* ... eksisterende stilarter ... */
+
+/* Modal Stilarter til Arbejde */
+#work-modal .modal-content {
+    max-width: 400px;
+}
+
+#work-modal button {
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#close-work-modal {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
 }
